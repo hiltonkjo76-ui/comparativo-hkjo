@@ -137,7 +137,7 @@
 
     // Abrir directo (sin marco): sirve de salida si el marco no carga.
     function ir() {
-      location.replace(URL_APP);
+      location.replace(URL_APP + '?t=' + Date.now());
     }
 
     // Android y PC: la app se muestra dentro de esta pagina, a pantalla
@@ -148,7 +148,7 @@
       document.getElementById('instalar').classList.add('hidden');
       var f = document.getElementById('marco');
       f.classList.remove('hidden');
-      f.src = URL_APP;
+      f.src = URL_APP + '?t=' + Date.now();
       // Ayuda para salir si el marco queda en blanco; se oculta sola.
       var ay = document.getElementById('ayuda');
       ay.classList.remove('hidden');
