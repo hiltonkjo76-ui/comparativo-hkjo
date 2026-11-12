@@ -39,17 +39,17 @@ jobs:
           cat > $A/gradle.properties <<'EOF'
           android.useAndroidX=true
           org.gradle.jvmargs=-Xmx2g
-          android.suppressUnsupportedCompileSdk=37
+          android.suppressUnsupportedCompileSdk=36
           EOF
           cat > $A/app/build.gradle <<'EOF'
           plugins { id 'com.android.application' }
           android {
             namespace 'com.hkjo.inventario'
-            compileSdk 37
+            compileSdk 36
             defaultConfig {
               applicationId 'com.hkjo.inventario'
               minSdk 21
-              targetSdk 37
+              targetSdk 36
               versionCode Integer.parseInt(System.getenv('VCODE') ?: '1')
               versionName '1.' + (System.getenv('VCODE') ?: '1')
             }
@@ -160,7 +160,11 @@ jobs:
         working-directory: android
         env:
           VCODE: ${{ github.run_number }}
-        run: gradle assembleRelease --no-daemon --stacktrace
+        run: |
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" --install "platforms;android-37" > /dev/null
+          gradle assembleRelease --no-daemon --stacktrace
 
       - name: Preparar archivo
         run: |
