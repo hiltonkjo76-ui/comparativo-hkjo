@@ -163,7 +163,13 @@ jobs:
         run: |
           SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKM" --licenses > /dev/null || true
-          "$SDKM" --install "platforms;android-37" > /dev/null
+          echo '--- paquetes android-37 disponibles ---'
+          "$SDKM" --list 2>/dev/null | grep -E 'platforms;android-3[6-9]|build-tools;3[67]' || true
+          ls "$ANDROID_HOME/platforms" || true
+          PKG=$("$SDKM" --list 2>/dev/null | grep -oE 'platforms;android-37[^ |]*' | sort -uV | tail -1)
+          echo "Instalando: $PKG"
+          "$SDKM" --install "$PKG" > /dev/null
+          ls "$ANDROID_HOME/platforms"
           gradle assembleRelease --no-daemon --stacktrace
 
       - name: Preparar archivo
