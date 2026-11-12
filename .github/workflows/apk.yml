@@ -19,7 +19,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.9'
+          gradle-version: '8.11.1'
 
       - name: Crear proyecto Android (Trusted Web Activity)
         run: |
@@ -34,21 +34,22 @@ jobs:
           include ':app'
           EOF
           cat > $A/build.gradle <<'EOF'
-          plugins { id 'com.android.application' version '8.5.2' apply false }
+          plugins { id 'com.android.application' version '8.9.1' apply false }
           EOF
           cat > $A/gradle.properties <<'EOF'
           android.useAndroidX=true
           org.gradle.jvmargs=-Xmx2g
+          android.suppressUnsupportedCompileSdk=36
           EOF
           cat > $A/app/build.gradle <<'EOF'
           plugins { id 'com.android.application' }
           android {
             namespace 'com.hkjo.comparativo'
-            compileSdk 34
+            compileSdk 36
             defaultConfig {
               applicationId 'com.hkjo.comparativo'
               minSdk 21
-              targetSdk 34
+              targetSdk 36
               versionCode Integer.parseInt(System.getenv('VCODE') ?: '1')
               versionName '1.' + (System.getenv('VCODE') ?: '1')
             }
@@ -167,8 +168,9 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: apk-${{ github.run_number }}
+          tag_name: apk-1
           name: Comparativo Hkjo. — App Android ${{ github.run_number }}
           body: Descarga ComparativoHkjo.apk en tu Android e instálala.
           files: ComparativoHkjo.apk
           make_latest: true
+          overwrite_files: true
