@@ -19,7 +19,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.11.1'
+          gradle-version: '9.1.0'
 
       - name: Crear proyecto Android (Trusted Web Activity)
         run: |
@@ -34,18 +34,22 @@ jobs:
           include ':app'
           EOF
           cat > $A/build.gradle <<'EOF'
-          plugins { id 'com.android.application' version '8.9.1' apply false }
+          plugins { id 'com.android.application' version '9.0.0' apply false }
           EOF
           cat > $A/gradle.properties <<'EOF'
           android.useAndroidX=true
           org.gradle.jvmargs=-Xmx2g
-          android.suppressUnsupportedCompileSdk=37
+          android.suppressUnsupportedCompileSdk=37.0
           EOF
           cat > $A/app/build.gradle <<'EOF'
           plugins { id 'com.android.application' }
           android {
             namespace 'com.hkjo.inventario'
-            compileSdk 37
+            compileSdk {
+              version = release(37) {
+                minorApiLevel = 0
+              }
+            }
             defaultConfig {
               applicationId 'com.hkjo.inventario'
               minSdk 21
@@ -166,7 +170,7 @@ jobs:
           echo '--- paquetes android-37 disponibles ---'
           "$SDKM" --list 2>/dev/null | grep -E 'platforms;android-3[6-9]|build-tools;3[67]' | tee -a "$GITHUB_STEP_SUMMARY" || true
           ls "$ANDROID_HOME/platforms" || true
-          PKG=$("$SDKM" --list 2>/dev/null | grep -oE 'platforms;android-37[^ |]*' | sort -uV | tail -1)
+          PKG='platforms;android-37.0'
           echo "Instalando: $PKG"
           "$SDKM" --install "$PKG" > /dev/null
           ls "$ANDROID_HOME/platforms" | tee -a "$GITHUB_STEP_SUMMARY"
