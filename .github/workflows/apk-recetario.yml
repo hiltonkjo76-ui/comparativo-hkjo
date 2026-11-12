@@ -19,7 +19,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.11.1'
+          gradle-version: '9.1.0'
 
       - name: Crear proyecto Android (Trusted Web Activity)
         run: |
@@ -34,22 +34,26 @@ jobs:
           include ':app'
           EOF
           cat > $A/build.gradle <<'EOF'
-          plugins { id 'com.android.application' version '8.9.1' apply false }
+          plugins { id 'com.android.application' version '9.0.0' apply false }
           EOF
           cat > $A/gradle.properties <<'EOF'
           android.useAndroidX=true
           org.gradle.jvmargs=-Xmx2g
-          android.suppressUnsupportedCompileSdk=36
+          android.suppressUnsupportedCompileSdk=37.0
           EOF
           cat > $A/app/build.gradle <<'EOF'
           plugins { id 'com.android.application' }
           android {
             namespace 'com.hkjo.recetario'
-            compileSdk 36
+            compileSdk {
+              version = release(37) {
+                minorApiLevel = 0
+              }
+            }
             defaultConfig {
               applicationId 'com.hkjo.recetario'
               minSdk 21
-              targetSdk 36
+              targetSdk 37
               versionCode Integer.parseInt(System.getenv('VCODE') ?: '1')
               versionName '1.' + (System.getenv('VCODE') ?: '1')
             }
@@ -160,7 +164,11 @@ jobs:
         working-directory: android
         env:
           VCODE: ${{ github.run_number }}
-        run: gradle assembleRelease --no-daemon --stacktrace
+        run: |
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" --install 'platforms;android-37.0' > /dev/null
+          gradle assembleRelease --no-daemon --stacktrace
 
       - name: Preparar archivo
         run: |
