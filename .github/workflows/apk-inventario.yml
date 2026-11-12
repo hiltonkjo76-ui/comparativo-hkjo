@@ -39,17 +39,17 @@ jobs:
           cat > $A/gradle.properties <<'EOF'
           android.useAndroidX=true
           org.gradle.jvmargs=-Xmx2g
-          android.suppressUnsupportedCompileSdk=36
+          android.suppressUnsupportedCompileSdk=37
           EOF
           cat > $A/app/build.gradle <<'EOF'
           plugins { id 'com.android.application' }
           android {
             namespace 'com.hkjo.inventario'
-            compileSdk 36
+            compileSdk 37
             defaultConfig {
               applicationId 'com.hkjo.inventario'
               minSdk 21
-              targetSdk 36
+              targetSdk 37
               versionCode Integer.parseInt(System.getenv('VCODE') ?: '1')
               versionName '1.' + (System.getenv('VCODE') ?: '1')
             }
