@@ -39,17 +39,17 @@ jobs:
           cat > $A/gradle.properties <<'EOF'
           android.useAndroidX=true
           org.gradle.jvmargs=-Xmx2g
-          android.suppressUnsupportedCompileSdk=36
+          android.suppressUnsupportedCompileSdk=37
           EOF
           cat > $A/app/build.gradle <<'EOF'
           plugins { id 'com.android.application' }
           android {
             namespace 'com.hkjo.inventario'
-            compileSdk 36
+            compileSdk 37
             defaultConfig {
               applicationId 'com.hkjo.inventario'
               minSdk 21
-              targetSdk 36
+              targetSdk 37
               versionCode Integer.parseInt(System.getenv('VCODE') ?: '1')
               versionName '1.' + (System.getenv('VCODE') ?: '1')
             }
@@ -164,12 +164,12 @@ jobs:
           SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKM" --licenses > /dev/null || true
           echo '--- paquetes android-37 disponibles ---'
-          "$SDKM" --list 2>/dev/null | grep -E 'platforms;android-3[6-9]|build-tools;3[67]' || true
+          "$SDKM" --list 2>/dev/null | grep -E 'platforms;android-3[6-9]|build-tools;3[67]' | tee -a "$GITHUB_STEP_SUMMARY" || true
           ls "$ANDROID_HOME/platforms" || true
           PKG=$("$SDKM" --list 2>/dev/null | grep -oE 'platforms;android-37[^ |]*' | sort -uV | tail -1)
           echo "Instalando: $PKG"
           "$SDKM" --install "$PKG" > /dev/null
-          ls "$ANDROID_HOME/platforms"
+          ls "$ANDROID_HOME/platforms" | tee -a "$GITHUB_STEP_SUMMARY"
           gradle assembleRelease --no-daemon --stacktrace
 
       - name: Preparar archivo
